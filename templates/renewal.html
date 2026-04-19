@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Card Renewal — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .status-card { border-radius:20px; padding:32px; margin-bottom:32px; position:relative; overflow:hidden; }
+  .status-card.warning { background:linear-gradient(135deg,rgba(244,200,66,0.1),rgba(244,200,66,0.05)); border:1px solid rgba(244,200,66,0.3); }
+  .status-card.ok { background:linear-gradient(135deg,rgba(0,201,177,0.1),rgba(0,201,177,0.05)); border:1px solid rgba(0,201,177,0.3); }
+  .status-card h2 { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; margin-bottom:8px; }
+  .status-card p { color:var(--muted); font-size:14px; line-height:1.6; }
+  .card-meta { display:flex; gap:32px; margin-top:20px; flex-wrap:wrap; }
+  .card-meta .item .lbl { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .card-meta .item .val { font-size:15px; font-weight:600; color:#fff; font-family:'Syne',sans-serif; }
+  .renewal-history { margin-top:32px; }
+  .renewal-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--border); font-size:13px; }
+  .renewal-row:last-child { border-bottom:none; }
+  .status-pill { padding:3px 10px; border-radius:100px; font-size:11px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
+  .pill-submitted { background:rgba(56,189,248,0.15); color:var(--sky); }
+  .pill-approved  { background:rgba(0,201,177,0.15); color:var(--teal); }
+  .pill-rejected  { background:rgba(255,107,138,0.15); color:var(--rose); }
+  .pill-under_review { background:rgba(244,200,66,0.15); color:var(--gold); }
+</style>
+{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:0 auto;">
+  <div class="page-header">
+    <a href="{% url 'home' %}" class="back">← Back to Home</a>
+    <div class="badge"> Card Renewal</div>
+    <h1>Renew Your Card</h1>
+    <p>Patient Smart Cards are valid for 5 years. Renew before expiry to ensure uninterrupted access to all facilities.</p>
+  </div>
+
+  <!-- CARD STATUS -->
+  <div class="status-card {% if is_expiring_soon %}warning{% else %}ok{% endif %}">
+    {% if is_expiring_soon %}
+      <h2 style="color:var(--gold);"> Renewal Required Soon</h2>
+      <p>Your card expires in <strong style="color:#fff;">{{ days_to_expiry }} days</strong>. Renew now to avoid disruption to your healthcare access.</p>
+    {% else %}
+      <h2 style="color:var(--teal);"> Card is Active</h2>
+      <p>Your card is valid. You can still submit a renewal request if you'd like to extend early.</p>
+    {% endif %}
+    <div class="card-meta">
+      <div class="item"><div class="lbl">Card ID</div><div class="val">{{ card.card_id }}</div></div>
+      <div class="item"><div class="lbl">Patient</div><div class="val">{{ patient.full_name }}</div></div>
+      <div class="item"><div class="lbl">Current Expiry</div><div class="val">{{ card.valid_until|date:"d M Y" }}</div></div>
+      <div class="item"><div class="lbl">Status</div><div class="val">{{ card.get_status_display }}</div></div>
+    </div>
+  </div>
+
+  <!-- RENEWAL FORM -->
+  {% if existing_renewal %}
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">🕐 Renewal In Progress</h3>
+      <p style="font-size:13px;color:var(--muted);line-height:1.6;">A renewal request is currently <strong style="color:var(--gold);">{{ existing_renewal.get_status_display }}</strong>. You will be notified once it is processed. New expiry upon approval: <strong style="color:#fff;">{{ existing_renewal.new_expiry|date:"d M Y" }}</strong>.</p>
+    </div>
+  {% else %}
+    <div class="card" style="margin-bottom:24px;">
+      <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;">📋 Submit Renewal Request</h3>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Renewing will extend your card validity by 5 years from current expiry. A new physical card will be dispatched to your registered address.</p>
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">Reason for Renewal (optional)</label>
+          {{ form.reason }}
+        </div>
+        <div style="background:rgba(0,201,177,0.05);border:1px solid rgba(0,201,177,0.15);border-radius:10px;padding:16px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.7;">
+          New card will be valid until: <strong style="color:var(--teal);font-size:15px;">{{ card.valid_until|date:"d M Y" }} + 5 years</strong>
+        </div>
+        <button type="submit" class="btn btn-primary"> Submit Renewal Request</button>
+      </form>
+    </div>
+  {% endif %}
+
+  <!-- RENEWAL HISTORY -->
+  {% if renewals %}
+  <div class="renewal-history">
+    <div class="section-title">Renewal History</div>
+    {% for r in renewals %}
+    <div class="renewal-row">
+      <div>
+        <div style="font-weight:600;color:#fff;margin-bottom:2px;">Request — {{ r.requested_on|date:"d M Y" }}</div>
+        <div style="font-size:12px;color:var(--muted);">New expiry: {{ r.new_expiry|date:"d M Y" }}</div>
+      </div>
+      <span class="status-pill pill-{{ r.status }}">{{ r.get_status_display }}</span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

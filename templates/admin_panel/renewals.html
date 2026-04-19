@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}Renewals — Admin{% endblock %}
+{% block extra_css %}
+<style>
+  .admin-layout { display:grid; grid-template-columns:220px 1fr; gap:0; min-height:calc(100vh - 60px); position:relative; z-index:1; }
+  .admin-sidebar { background:rgba(13,27,62,0.6); border-right:1px solid var(--border); padding:32px 0; position:sticky; top:60px; height:calc(100vh - 60px); overflow-y:auto; }
+  .sidebar-section { padding:0 16px; margin-bottom:32px; }
+  .sidebar-label { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding:0 8px; margin-bottom:12px; }
+  .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; text-decoration:none; font-size:13px; color:var(--muted); transition:all 0.2s; margin-bottom:4px; }
+  .sidebar-link:hover, .sidebar-link.active { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .sidebar-link .icon { font-size:16px; width:20px; text-align:center; }
+  .admin-main { padding:40px 40px 80px; }
+  .filter-bar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+  .filter-bar input, .filter-bar select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; }
+  .filter-bar input { min-width:260px; }
+  .filter-bar select option { background:#0d1b3e; }
+  .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .table-meta { padding:16px 20px; border-bottom:1px solid var(--border); font-size:13px; color:var(--muted); }
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .data-table td { font-size:13px; color:var(--text); padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+  .data-table tr:hover td { background:rgba(255,255,255,0.02); }
+  .pill { display:inline-block; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .pill-submitted   { background:rgba(56,189,248,0.15); color:var(--sky);  }
+  .pill-under_review{ background:rgba(244,200,66,0.15); color:var(--gold); }
+  .pill-approved    { background:rgba(0,201,177,0.15);  color:var(--teal); }
+  .pill-rejected    { background:rgba(255,107,138,0.15);color:var(--rose); }
+  .action-form { display:flex; flex-direction:column; gap:6px; }
+  .action-form input { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:5px 10px; color:var(--text); font-size:12px; outline:none; width:160px; font-family:'DM Sans',sans-serif; }
+  .action-form input::placeholder { color:var(--muted); }
+  .btn-row { display:flex; gap:6px; }
+  .action-btn { display:inline-flex; align-items:center; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+  .btn-approve { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .btn-approve:hover { background:rgba(0,201,177,0.2); }
+  .btn-reject  { background:rgba(255,107,138,0.1); color:var(--rose); }
+  .btn-reject:hover  { background:rgba(255,107,138,0.2); }
+</style>
+{% endblock %}
+{% block content %}
+<div style="margin:-48px -24px 0; position:relative; z-index:1;">
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="{% url 'admin_dashboard' %}" class="sidebar-link"><span class="icon">📊</span> Dashboard</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <a href="{% url 'admin_patients' %}"   class="sidebar-link"><span class="icon">👤</span> Patients</a>
+      <a href="{% url 'admin_cards' %}"      class="sidebar-link"><span class="icon">💳</span> Smart Cards</a>
+      <a href="{% url 'admin_deliveries' %}" class="sidebar-link"><span class="icon">📦</span> Deliveries</a>
+      <a href="{% url 'admin_renewals' %}"   class="sidebar-link active"><span class="icon">🔄</span> Renewals</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <a href="/admin/" class="sidebar-link"><span class="icon">⚙️</span> Django Admin</a>
+      <a href="{% url 'home' %}" class="sidebar-link"><span class="icon">🏠</span> Back to Site</a>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    <div style="margin-bottom:32px;">
+      <h1 style="font-family:'Orbitron',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;"> Renewal Requests</h1>
+      <p style="color:var(--muted);font-size:14px;">Approve or reject patient card renewal requests.</p>
+    </div>
+
+    <form method="get" class="filter-bar">
+      <input type="text" name="q" value="{{ q }}" placeholder="🔍  Search card ID or patient name...">
+      <select name="status">
+        <option value="">All Statuses</option>
+        {% for val,label in status_choices %}
+        <option value="{{ val }}" {% if status == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="action-btn btn-approve" style="padding:10px 18px;">Filter</button>
+      <a href="{% url 'admin_renewals' %}" class="action-btn" style="background:rgba(255,255,255,0.05);color:var(--muted);padding:10px 18px;">Reset</a>
+    </form>
+
+    <div class="table-wrap">
+      <div class="table-meta">Showing <strong style="color:#fff;">{{ total }}</strong> renewal request(s)</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Card ID</th><th>Patient</th><th>Requested</th><th>New Expiry</th><th>Reason</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for r in renewals %}
+          <tr>
+            <td><span style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--teal);">{{ r.card.card_id }}</span></td>
+            <td>
+              <div style="font-weight:600;color:#fff;">{{ r.card.patient.full_name }}</div>
+              <div style="font-size:11px;color:var(--muted);">{{ r.card.patient.mobile }}</div>
+            </td>
+            <td style="color:var(--muted);">{{ r.requested_on|date:"d M Y" }}</td>
+            <td style="color:#fff;">{{ r.new_expiry|date:"d M Y" }}</td>
+            <td style="color:var(--muted);max-width:180px;">{{ r.reason|default:"—"|truncatechars:60 }}</td>
+            <td><span class="pill pill-{{ r.status }}">{{ r.get_status_display }}</span></td>
+            <td>
+              {% if r.status == 'submitted' or r.status == 'under_review' %}
+              <form method="post" action="{% url 'admin_renewal_action' r.pk %}" class="action-form">
+                {% csrf_token %}
+                <input type="text" name="remarks" placeholder="Remarks (optional)">
+                <div class="btn-row">
+                  <button type="submit" name="action" value="approve" class="action-btn btn-approve"> Approve</button>
+                  <button type="submit" name="action" value="reject"  class="action-btn btn-reject">✗ Reject</button>
+                </div>
+              </form>
+              {% else %}
+              <span style="font-size:12px;color:var(--muted);">{{ r.remarks|default:"—" }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

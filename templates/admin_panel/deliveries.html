@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Deliveries — Admin{% endblock %}
+{% block extra_css %}
+<style>
+  .admin-layout { display:grid; grid-template-columns:220px 1fr; gap:0; min-height:calc(100vh - 60px); position:relative; z-index:1; }
+  .admin-sidebar { background:rgba(13,27,62,0.6); border-right:1px solid var(--border); padding:32px 0; position:sticky; top:60px; height:calc(100vh - 60px); overflow-y:auto; }
+  .sidebar-section { padding:0 16px; margin-bottom:32px; }
+  .sidebar-label { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding:0 8px; margin-bottom:12px; }
+  .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; text-decoration:none; font-size:13px; color:var(--muted); transition:all 0.2s; margin-bottom:4px; }
+  .sidebar-link:hover, .sidebar-link.active { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .sidebar-link .icon { font-size:16px; width:20px; text-align:center; }
+  .admin-main { padding:40px 40px 80px; }
+  .filter-bar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+  .filter-bar input, .filter-bar select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; }
+  .filter-bar input { min-width:260px; }
+  .filter-bar select option { background:#0d1b3e; }
+  .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .table-meta { padding:16px 20px; border-bottom:1px solid var(--border); font-size:13px; color:var(--muted); }
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .data-table td { font-size:13px; color:var(--text); padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+  .data-table tr:hover td { background:rgba(255,255,255,0.02); }
+  .pill { display:inline-block; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .pill-processing       { background:rgba(56,189,248,0.15);  color:var(--sky);    }
+  .pill-dispatched       { background:rgba(167,139,250,0.15); color:var(--violet); }
+  .pill-in_transit       { background:rgba(244,200,66,0.15);  color:var(--gold);   }
+  .pill-out_for_delivery { background:rgba(251,146,60,0.15);  color:#fb923c;       }
+  .pill-delivered        { background:rgba(0,201,177,0.15);   color:var(--teal);   }
+  .pill-failed           { background:rgba(255,107,138,0.15); color:var(--rose);   }
+  .update-form { display:flex; flex-direction:column; gap:6px; }
+  .update-form select, .update-form input { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:8px; padding:5px 10px; color:var(--text); font-size:12px; outline:none; width:160px; }
+  .update-form select option { background:#0d1b3e; }
+  .action-btn { display:inline-flex; align-items:center; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
+  .btn-save { background:rgba(0,201,177,0.1); color:var(--teal); }
+</style>
+{% endblock %}
+{% block content %}
+<div style="margin:-48px -24px 0; position:relative; z-index:1;">
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="{% url 'admin_dashboard' %}" class="sidebar-link"><span class="icon">📊</span> Dashboard</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <a href="{% url 'admin_patients' %}"   class="sidebar-link"><span class="icon">👤</span> Patients</a>
+      <a href="{% url 'admin_cards' %}"      class="sidebar-link"><span class="icon">💳</span> Smart Cards</a>
+      <a href="{% url 'admin_deliveries' %}" class="sidebar-link active"><span class="icon">📦</span> Deliveries</a>
+      <a href="{% url 'admin_renewals' %}"   class="sidebar-link"><span class="icon">🔄</span> Renewals</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <a href="/admin/" class="sidebar-link"><span class="icon">⚙️</span> Django Admin</a>
+      <a href="{% url 'home' %}" class="sidebar-link"><span class="icon">🏠</span> Back to Site</a>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    <div style="margin-bottom:32px;">
+      <h1 style="font-family:'Orbitron',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:6px;">📦 Deliveries</h1>
+      <p style="color:var(--muted);font-size:14px;">Track and update physical card delivery statuses.</p>
+    </div>
+
+    <form method="get" class="filter-bar">
+      <input type="text" name="q" value="{{ q }}" placeholder="🔍  Search card ID, name, city, PIN...">
+      <select name="status">
+        <option value="">All Statuses</option>
+        {% for val,label in status_choices %}
+        <option value="{{ val }}" {% if status == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="action-btn btn-save" style="padding:10px 18px;">Filter</button>
+      <a href="{% url 'admin_deliveries' %}" class="action-btn" style="background:rgba(255,255,255,0.05);color:var(--muted);padding:10px 18px;">Reset</a>
+    </form>
+
+    <div class="table-wrap">
+      <div class="table-meta">Showing <strong style="color:#fff;">{{ total }}</strong> delivery record(s)</div>
+      <table class="data-table">
+        <thead>
+          <tr><th>Card ID</th><th>Patient</th><th>City / PIN</th><th>Slot</th><th>Status</th><th>Tracking ID</th><th>Update</th></tr>
+        </thead>
+        <tbody>
+          {% for d in deliveries %}
+          <tr>
+            <td><span style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--teal);">{{ d.card.card_id }}</span></td>
+            <td>
+              <div style="font-weight:600;color:#fff;">{{ d.card.patient.full_name }}</div>
+              <div style="font-size:11px;color:var(--muted);">{{ d.requested_at|date:"d M Y" }}</div>
+            </td>
+            <td>{{ d.city }}, {{ d.state }}<br><span style="font-size:11px;color:var(--muted);">{{ d.pin_code }}</span></td>
+            <td style="color:var(--muted);font-size:12px;">{{ d.get_preferred_slot_display }}</td>
+            <td><span class="pill pill-{{ d.status }}">{{ d.get_status_display }}</span></td>
+            <td style="font-size:12px;color:var(--muted);">{{ d.tracking_id|default:"—" }}</td>
+            <td>
+              <form method="post" action="{% url 'admin_delivery_status' d.pk %}" class="update-form">
+                {% csrf_token %}
+                <select name="status">
+                  {% for val,label in status_choices %}
+                  <option value="{{ val }}" {% if d.status == val %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <input type="text" name="tracking_id" placeholder="Tracking ID" value="{{ d.tracking_id }}">
+                <button type="submit" class="action-btn btn-save">Update</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

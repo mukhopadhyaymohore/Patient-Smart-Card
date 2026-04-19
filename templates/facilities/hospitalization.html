@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Cashless Hospitalization — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(251,146,60,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .coverage-table { width:100%; border-collapse:collapse; margin-bottom:40px; }
+  .coverage-table th { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .coverage-table td { font-size:14px; color:var(--text); padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .coverage-table tr:hover td { background:rgba(255,255,255,0.02); }
+  .yes { color:#34d399; font-weight:600; }
+  .no  { color:var(--rose); font-weight:600; }
+  .adm-flow { display:flex; flex-direction:column; gap:0; margin-bottom:40px; }
+  .adm-step { display:flex; gap:20px; padding-bottom:24px; position:relative; }
+  .adm-step:not(:last-child)::before { content:''; position:absolute; left:19px; top:42px; bottom:0; width:2px; background:rgba(251,146,60,0.2); }
+  .adm-dot { width:40px; height:40px; border-radius:50%; background:rgba(251,146,60,0.1); border:2px solid rgba(251,146,60,0.3); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .adm-step h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:4px; }
+  .adm-step p { font-size:13px; color:var(--muted); line-height:1.5; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Inpatient</div>
+  <h1>Cashless Hospitalization</h1>
+  <p>Get admitted, treated, and discharged without paying a rupee upfront at 5,000+ empanelled hospitals. Your Smart Card handles everything — admission to settlement.</p>
+</div>
+
+<div class="section-title">What's Covered</div>
+<table class="coverage-table">
+  <thead><tr><th>Treatment Type</th><th>Cashless</th><th>Pre-Auth Required</th><th>Max Coverage</th></tr></thead>
+  <tbody>
+    <tr><td>Planned Surgery</td><td class="yes">✓ Yes</td><td>Yes — 48hrs prior</td><td>Up to Sum Insured</td></tr>
+    <tr><td>Emergency Admission</td><td class="yes">✓ Yes</td><td>Within 24hrs</td><td>Up to Sum Insured</td></tr>
+    <tr><td>ICU / Critical Care</td><td class="yes">✓ Yes</td><td>Auto-triggered</td><td>Up to Sum Insured</td></tr>
+    <tr><td>Daycare Procedures</td><td class="yes">✓ Yes</td><td>Same day</td><td>Up to Sum Insured</td></tr>
+    <tr><td>Maternity</td><td class="yes">✓ Yes</td><td>Yes — 30 days prior</td><td>As per policy</td></tr>
+    <tr><td>Organ Transplant</td><td class="yes">✓ Yes</td><td>Yes — specialist required</td><td>As per policy</td></tr>
+    <tr><td>Non-Network Hospital</td><td class="no">✗ Reimbursement</td><td>Post-discharge</td><td>80% of bill</td></tr>
+  </tbody>
+</table>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">🚪</div><h4>Seamless Admission</h4><p>Present your Smart Card at the admission desk. No deposit, no cash, no cheques. Admission processed in minutes.</p></div>
+  <div class="feature-card"><div class="icon">🛏️</div><h4>Room Upgrade Tracking</h4><p>Card automatically tracks room category vs. policy entitlement and alerts if an upgrade co-pay applies.</p></div>
+  <div class="feature-card"><div class="icon">📊</div><h4>Daily Bill Tracker</h4><p>View your running hospital bill in real time via the app — no surprises at discharge.</p></div>
+  <div class="feature-card"><div class="icon">👨‍👩‍👧</div><h4>Family Floater Support</h4><p>If you have a family floater policy, any covered family member can use the same cashless facility with their own card.</p></div>
+  <div class="feature-card"><div class="icon">📤</div><h4>Auto Discharge Process</h4><p>Discharge paperwork is processed digitally. Final bill is settled directly with insurer — you just walk out.</p></div>
+  <div class="feature-card"><div class="icon">📁</div><h4>Discharge Summary to EHR</h4><p>Discharge summary, medications, and follow-up instructions are auto-saved to your Electronic Health Record.</p></div>
+</div>
+
+<div class="section-title">Admission Process</div>
+<div class="adm-flow">
+  <div class="adm-step"><div class="adm-dot">🏥</div><div><h4>Arrive at Hospital</h4><p>Walk in to any empanelled hospital. Present your Smart Card at the admission counter.</p></div></div>
+  <div class="adm-step"><div class="adm-dot">📋</div><div><h4>Pre-Auth Triggered</h4><p>Hospital sends pre-authorisation to insurer with diagnosis code and estimated cost automatically.</p></div></div>
+  <div class="adm-step"><div class="adm-dot">✅</div><div><h4>Approved & Admitted</h4><p>Insurer approves within minutes. You are admitted to the appropriate ward — cashlessly.</p></div></div>
+  <div class="adm-step"><div class="adm-dot">💊</div><div><h4>Treatment</h4><p>All treatment, surgery, medications, and ICU charges are tracked and covered under your policy limits.</p></div></div>
+  <div class="adm-step"><div class="adm-dot">🚪</div><div><h4>Cashless Discharge</h4><p>At discharge, final bill is submitted to insurer. You pay only applicable co-pay if any — then walk out.</p></div></div>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Delivery Tracking — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .delivery-card { background:var(--surface); border:1px solid var(--border); border-radius:20px; padding:32px; margin-bottom:32px; }
+  .delivery-card h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#fff; margin-bottom:20px; }
+  .track-steps { display:flex; flex-direction:column; gap:0; }
+  .track-step { display:flex; gap:20px; align-items:flex-start; padding-bottom:28px; position:relative; }
+  .track-step:last-child { padding-bottom:0; }
+  .track-step:not(:last-child)::before { content:''; position:absolute; left:19px; top:42px; bottom:0; width:2px; background:var(--border); }
+  .track-step.done::before { background:var(--teal); }
+  .track-icon { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; border:2px solid var(--border); background:var(--surface); flex-shrink:0; position:relative; z-index:1; transition:all 0.3s; }
+  .track-step.done .track-icon { border-color:var(--teal); background:rgba(0,201,177,0.1); }
+  .track-step.current .track-icon { border-color:var(--teal); background:rgba(0,201,177,0.15); box-shadow:0 0 16px rgba(0,201,177,0.3); animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 16px rgba(0,201,177,0.3)} 50%{box-shadow:0 0 30px rgba(0,201,177,0.5)} }
+  .track-content h4 { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:4px; }
+  .track-step.done .track-content h4 { color:#fff; }
+  .track-step.current .track-content h4 { color:var(--teal); }
+  .track-step:not(.done):not(.current) .track-content h4 { color:var(--muted); }
+  .track-content p { font-size:13px; color:var(--muted); line-height:1.5; }
+  .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:20px; }
+  .info-item .lbl { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; }
+  .info-item .val { font-size:14px; font-weight:500; color:#fff; }
+  @media(max-width:640px){ .info-grid{ grid-template-columns:1fr; } }
+</style>
+{% endblock %}
+{% block content %}
+<div style="max-width:700px;margin:0 auto;">
+  <div class="page-header">
+    <a href="{% url 'home' %}" class="back">← Back to Home</a>
+    <div class="badge"> Delivery Tracking</div>
+    <h1>Track Your Card</h1>
+    <p>Your physical Patient Smart Card is being processed and will be delivered to your registered address.</p>
+  </div>
+
+  {% if delivery %}
+  <div class="delivery-card">
+    <h2> Delivery Status</h2>
+    <div class="track-steps">
+      {% for status_key, label, icon, desc in steps %}
+      <div class="track-step {% if forloop.counter0 < current_idx %}done{% elif forloop.counter0 == current_idx %}current{% endif %}">
+        <div class="track-icon">{{ icon }}</div>
+        <div class="track-content">
+          <h4>{{ label }}</h4>
+          <p>{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="info-grid" style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
+      <div class="info-item"><div class="lbl">Card ID</div><div class="val">{{ card.card_id }}</div></div>
+      <div class="info-item"><div class="lbl">Patient</div><div class="val">{{ patient.full_name }}</div></div>
+      <div class="info-item"><div class="lbl">Delivering To</div><div class="val">{{ delivery.city }}, {{ delivery.state }} — {{ delivery.pin_code }}</div></div>
+      <div class="info-item"><div class="lbl">Preferred Slot</div><div class="val">{{ delivery.get_preferred_slot_display }}</div></div>
+      {% if delivery.tracking_id %}
+      <div class="info-item"><div class="lbl">Tracking ID</div><div class="val" style="color:var(--teal);">{{ delivery.tracking_id }}</div></div>
+      {% endif %}
+      <div class="info-item"><div class="lbl">Requested On</div><div class="val">{{ delivery.requested_at|date:"d M Y" }}</div></div>
+    </div>
+    {% if delivery.instructions %}
+    <div style="margin-top:16px;padding:14px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid var(--border);font-size:13px;color:var(--muted);">
+      📝 <strong style="color:#fff;">Instructions:</strong> {{ delivery.instructions }}
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card" style="text-align:center;padding:48px;">
+    <div style="font-size:48px;margin-bottom:16px;">📭</div>
+    <h3 style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;">No Delivery Found</h3>
+    <p style="color:var(--muted);margin-bottom:24px;">Please complete your card registration first.</p>
+    <a href="{% url 'register' %}" class="btn btn-primary">Register Now →</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

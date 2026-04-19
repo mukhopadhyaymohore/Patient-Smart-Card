@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% block title %}Patients — Admin{% endblock %}
+{% block extra_css %}
+<style>
+  .admin-layout { display:grid; grid-template-columns:220px 1fr; gap:0; min-height:calc(100vh - 60px); position:relative; z-index:1; }
+  .admin-sidebar { background:rgba(13,27,62,0.6); border-right:1px solid var(--border); padding:32px 0; position:sticky; top:60px; height:calc(100vh - 60px); overflow-y:auto; }
+  .sidebar-section { padding:0 16px; margin-bottom:32px; }
+  .sidebar-label { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding:0 8px; margin-bottom:12px; }
+  .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; text-decoration:none; font-size:13px; color:var(--muted); transition:all 0.2s; margin-bottom:4px; }
+  .sidebar-link:hover, .sidebar-link.active { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .sidebar-link .icon { font-size:16px; width:20px; text-align:center; }
+  .admin-main { padding:40px 40px 80px; }
+  .admin-header { margin-bottom:32px; }
+  .admin-header h1 { font-family:'Orbitron',sans-serif; font-size:24px; font-weight:800; color:#fff; margin-bottom:6px; }
+  .filter-bar { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:28px; align-items:center; }
+  .filter-bar input, .filter-bar select { background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:13px; outline:none; transition:border-color 0.2s; }
+  .filter-bar input:focus, .filter-bar select:focus { border-color:var(--teal); }
+  .filter-bar input { min-width:260px; }
+  .filter-bar select option { background:#0d1b3e; }
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table th { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  .data-table td { font-size:13px; color:var(--text); padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); vertical-align:middle; }
+  .data-table tr:hover td { background:rgba(255,255,255,0.02); }
+  .pill { display:inline-block; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .pill-pending   { background:rgba(244,200,66,0.15); color:var(--gold); }
+  .pill-active    { background:rgba(0,201,177,0.15);  color:var(--teal); }
+  .pill-suspended { background:rgba(167,139,250,0.15);color:var(--violet);}
+  .pill-none      { background:rgba(255,255,255,0.06);color:var(--muted); }
+  .action-btn { display:inline-flex; align-items:center; gap:5px; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; transition:all 0.2s; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .btn-view   { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .btn-view:hover { background:rgba(0,201,177,0.2); }
+  .btn-delete { background:rgba(255,107,138,0.1); color:var(--rose); }
+  .btn-delete:hover { background:rgba(255,107,138,0.2); }
+  .table-wrap { background:var(--surface); border:1px solid var(--border); border-radius:16px; overflow:hidden; }
+  .table-meta { padding:16px 20px; border-bottom:1px solid var(--border); font-size:13px; color:var(--muted); }
+  .empty-state { padding:60px; text-align:center; color:var(--muted); font-size:14px; }
+</style>
+{% endblock %}
+{% block content %}
+<div style="margin:-48px -24px 0; position:relative; z-index:1;">
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="{% url 'admin_dashboard' %}" class="sidebar-link"><span class="icon">📊</span> Dashboard</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <a href="{% url 'admin_patients' %}"   class="sidebar-link active"><span class="icon">👤</span> Patients</a>
+      <a href="{% url 'admin_cards' %}"      class="sidebar-link"><span class="icon">💳</span> Smart Cards</a>
+      <a href="{% url 'admin_deliveries' %}" class="sidebar-link"><span class="icon">📦</span> Deliveries</a>
+      <a href="{% url 'admin_renewals' %}"   class="sidebar-link"><span class="icon">🔄</span> Renewals</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <a href="/admin/" class="sidebar-link"><span class="icon">⚙️</span> Django Admin</a>
+      <a href="{% url 'home' %}" class="sidebar-link"><span class="icon">🏠</span> Back to Site</a>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    <div class="admin-header">
+      <h1> Patient Management</h1>
+      <p style="color:var(--muted);font-size:14px;">Search, view, and manage all registered patients.</p>
+    </div>
+
+    <form method="get" class="filter-bar">
+      <input type="text" name="q" value="{{ q }}" placeholder="🔍  Search name, mobile, Aadhaar, card ID...">
+      <select name="blood">
+        <option value="">All Blood Groups</option>
+        {% for val,label in blood_choices %}
+        <option value="{{ val }}" {% if blood == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <select name="gender">
+        <option value="">All Genders</option>
+        {% for val,label in gender_choices %}
+        <option value="{{ val }}" {% if gender == val %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="action-btn btn-view" style="padding:10px 18px;">Filter</button>
+      <a href="{% url 'admin_patients' %}" class="action-btn" style="background:rgba(255,255,255,0.05);color:var(--muted);padding:10px 18px;">Reset</a>
+    </form>
+
+    <div class="table-wrap">
+      <div class="table-meta">Showing <strong style="color:#fff;">{{ total }}</strong> patient(s)</div>
+      {% if patients %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Mobile</th>
+            <th>Blood</th>
+            <th>Gender</th>
+            <th>Card ID</th>
+            <th>Card Status</th>
+            <th>Registered</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in patients %}
+          <tr>
+            <td>
+              <div style="font-weight:600;color:#fff;">{{ p.full_name }}</div>
+              <div style="font-size:11px;color:var(--muted);">{{ p.email }}</div>
+            </td>
+            <td>{{ p.mobile }}</td>
+            <td><span style="color:var(--rose);font-weight:600;">{{ p.blood_group }}</span></td>
+            <td>{{ p.get_gender_display }}</td>
+            <td>
+              {% if p.card %}
+              <span style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--teal);">{{ p.card.card_id }}</span>
+              {% else %}<span style="color:var(--muted);">—</span>{% endif %}
+            </td>
+            <td>
+              {% if p.card %}
+              <span class="pill pill-{{ p.card.status }}">{{ p.card.get_status_display }}</span>
+              {% else %}<span class="pill pill-none">No Card</span>{% endif %}
+            </td>
+            <td style="color:var(--muted);">{{ p.created_at|date:"d M Y" }}</td>
+            <td>
+              <div style="display:flex;gap:8px;">
+                <a href="{% url 'admin_patient_detail' p.pk %}" class="action-btn btn-view">View</a>
+                <a href="{% url 'admin_patient_delete' p.pk %}" class="action-btn btn-delete">Delete</a>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div class="empty-state">No patients found matching your search.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

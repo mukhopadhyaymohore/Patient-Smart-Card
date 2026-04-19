@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Consent & Privacy — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(167,139,250,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .consent-tiers { display:flex; flex-direction:column; gap:12px; margin-bottom:40px; }
+  .consent-tier { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px; display:flex; gap:16px; align-items:flex-start; }
+  .tier-badge { min-width:80px; padding:5px 12px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; text-align:center; flex-shrink:0; }
+  .tier-emergency { background:rgba(255,107,138,0.15); color:var(--rose); }
+  .tier-treating  { background:rgba(0,201,177,0.15); color:var(--teal); }
+  .tier-research  { background:rgba(167,139,250,0.15); color:var(--violet); }
+  .tier-third     { background:rgba(244,200,66,0.15); color:var(--gold); }
+  .consent-tier h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:4px; }
+  .consent-tier p { font-size:13px; color:var(--muted); line-height:1.5; }
+  .law-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-bottom:40px; }
+  .law-card { background:rgba(167,139,250,0.06); border:1px solid rgba(167,139,250,0.15); border-radius:12px; padding:18px; }
+  .law-card h4 { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:var(--violet); margin-bottom:6px; }
+  .law-card p { font-size:12px; color:var(--muted); line-height:1.55; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Privacy</div>
+  <h1>Consent & Privacy Control</h1>
+  <p>You own your health data. The Patient Smart Card gives you granular control over who can see what — with a complete audit trail of every access, every time.</p>
+</div>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">🎛️</div><h4>Granular Permissions</h4><p>Control access per record type, per provider, and per time window. Share only what's needed for each visit.</p></div>
+  <div class="feature-card"><div class="icon">👁️</div><h4>Access Audit Trail</h4><p>See exactly who accessed your records, when, from which facility, and what they viewed — in real time.</p></div>
+  <div class="feature-card"><div class="icon">🚫</div><h4>Instant Revocation</h4><p>Revoke any provider's access to your records instantly from the app — takes effect in under 30 seconds.</p></div>
+  <div class="feature-card"><div class="icon">🕐</div><h4>Time-Limited Access</h4><p>Grant access for a specific duration — e.g. only during this admission, or only for the next 7 days.</p></div>
+  <div class="feature-card"><div class="icon">🔐</div><h4>Sensitive Record Vaulting</h4><p>Mental health, reproductive health, and HIV-related records can be vaulted — requiring extra consent to access.</p></div>
+  <div class="feature-card"><div class="icon">📤</div><h4>Data Portability</h4><p>Export your complete health data in standard formats (FHIR, PDF) at any time. Your data, your right.</p></div>
+</div>
+
+<div class="section-title">Consent Tiers</div>
+<div class="consent-tiers">
+  <div class="consent-tier">
+    <div class="tier-badge tier-emergency">Emergency</div>
+    <div><h4>Emergency Access — No Consent Required</h4><p>First responders can read critical data (blood group, allergies, emergency contacts) without PIN in life-threatening situations.</p></div>
+  </div>
+  <div class="consent-tier">
+    <div class="tier-badge tier-treating">Treating</div>
+    <div><h4>Treating Doctor — Card Tap Consent</h4><p>Doctors you present your card to can access your full EHR during the active consultation. Access ends after discharge.</p></div>
+  </div>
+  <div class="consent-tier">
+    <div class="tier-badge tier-research">Research</div>
+    <div><h4>Research / Analytics — Explicit Opt-In Only</h4><p>Anonymised data may be used for health research only with your explicit, separate opt-in consent. Opt out anytime.</p></div>
+  </div>
+  <div class="consent-tier">
+    <div class="tier-badge tier-third">Third Party</div>
+    <div><h4>Third Parties — Blocked by Default</h4><p>Insurance companies, employers, and advertisers cannot access your health data. Sharing requires your explicit approval each time.</p></div>
+  </div>
+</div>
+
+<div class="section-title">Legal Compliance</div>
+<div class="law-grid">
+  <div class="law-card"><h4>DPDP Act 2023</h4><p>India's Digital Personal Data Protection Act — full compliance with data minimisation, purpose limitation, and consent requirements.</p></div>
+  <div class="law-card"><h4>HIPAA Standards</h4><p>Meets HIPAA administrative, physical, and technical safeguard standards for health data protection.</p></div>
+  <div class="law-card"><h4>NHA ABDM Guidelines</h4><p>Compliant with Ayushman Bharat Digital Mission's Health Data Management Policy and ABHA standards.</p></div>
+  <div class="law-card"><h4>ISO 27001</h4><p>Information security management certified. Regular third-party audits ensure ongoing compliance and data safety.</p></div>
+</div>
+{% endblock %}

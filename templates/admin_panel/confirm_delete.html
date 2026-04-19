@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Confirm Delete — Admin{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:80px auto;text-align:center;">
+  <div style="font-size:56px;margin-bottom:24px;">⚠️</div>
+  <h2 style="font-family:'Orbitron',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:12px;">Delete Patient?</h2>
+  <p style="color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:32px;">
+    You are about to permanently delete <strong style="color:#fff;">{{ patient.full_name }}</strong> and all associated data including their Smart Card, delivery records, and renewal history. This action cannot be undone.
+  </p>
+  <div style="display:flex;gap:12px;justify-content:center;">
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" style="background:rgba(255,107,138,0.15);border:1px solid rgba(255,107,138,0.3);color:var(--rose);padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">🗑 Yes, Delete Permanently</button>
+    </form>
+    <a href="{% url 'admin_patients' %}" style="background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--muted);padding:12px 28px;border-radius:10px;font-size:14px;font-weight:600;text-decoration:none;">Cancel</a>
+  </div>
+</div>
+{% endblock %}

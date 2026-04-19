@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family:Arial,sans-serif; background:#0a0f1e; color:#e8edf5; margin:0; padding:0; }
+  .container { max-width:600px; margin:40px auto; background:#0d1b3e; border:1px solid rgba(0,201,177,0.2); border-radius:16px; overflow:hidden; }
+  .header { background:linear-gradient(135deg,#0d2545,#0a3d4f); padding:40px 32px; text-align:center; }
+  .header h1 { font-size:28px; font-weight:800; color:#fff; margin:0 0 8px; }
+  .header p { color:#00c9b1; font-size:14px; margin:0; }
+  .body { padding:32px; }
+  .body h2 { font-size:20px; color:#fff; margin-bottom:16px; }
+  .body p { font-size:14px; color:#7a8ba0; line-height:1.7; margin-bottom:16px; }
+  .card-box { background:rgba(0,201,177,0.08); border:1px solid rgba(0,201,177,0.2); border-radius:12px; padding:20px; margin:24px 0; }
+  .card-box .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px; }
+  .card-box .row:last-child { border-bottom:none; }
+  .card-box .lbl { color:#7a8ba0; }
+  .card-box .val { color:#fff; font-weight:600; }
+  .footer { background:rgba(0,0,0,0.2); padding:20px 32px; text-align:center; font-size:12px; color:#7a8ba0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1> MedCard Pro</h1>
+    <p>Card Renewal — Approved </p>
+  </div>
+  <div class="body">
+    <h2>Great news, {{ patient.first_name }}!</h2>
+    <p>Your Patient Smart Card renewal request has been <strong style="color:#00c9b1;">approved</strong>. Your card validity has been extended and a new physical card will be dispatched to your address.</p>
+    <div class="card-box">
+      <div class="row"><span class="lbl">Card ID</span><span class="val" style="color:#00c9b1;font-family:monospace;">{{ card.card_id }}</span></div>
+      <div class="row"><span class="lbl">New Valid Until</span><span class="val">{{ renewal.new_expiry|date:"d M Y" }}</span></div>
+      <div class="row"><span class="lbl">Renewal Status</span><span class="val" style="color:#00c9b1;">Approved</span></div>
+      {% if renewal.remarks %}<div class="row"><span class="lbl">Remarks</span><span class="val">{{ renewal.remarks }}</span></div>{% endif %}
+    </div>
+    <p>Your new card will be valid for another 5 years. Thank you for renewing on time.</p>
+  </div>
+  <div class="footer">Patient Smart Card · This is an automated email. Please do not reply.</div>
+</div>
+</body>
+</html>

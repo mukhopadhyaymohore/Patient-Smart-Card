@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family:Arial,sans-serif; background:#0a0f1e; color:#e8edf5; margin:0; padding:0; }
+  .container { max-width:600px; margin:40px auto; background:#0d1b3e; border:1px solid rgba(56,189,248,0.2); border-radius:16px; overflow:hidden; }
+  .header { background:linear-gradient(135deg,#0d2545,#0a3d4f); padding:40px 32px; text-align:center; }
+  .header h1 { font-size:28px; font-weight:800; color:#fff; margin:0 0 8px; }
+  .header p { color:#38bdf8; font-size:14px; margin:0; }
+  .body { padding:32px; }
+  .body h2 { font-size:20px; color:#fff; margin-bottom:16px; }
+  .body p { font-size:14px; color:#7a8ba0; line-height:1.7; margin-bottom:16px; }
+  .card-box { background:rgba(56,189,248,0.06); border:1px solid rgba(56,189,248,0.2); border-radius:12px; padding:20px; margin:24px 0; }
+  .card-box .row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px; }
+  .card-box .row:last-child { border-bottom:none; }
+  .card-box .lbl { color:#7a8ba0; }
+  .card-box .val { color:#fff; font-weight:600; }
+  .status-map { display:flex; justify-content:space-between; margin:20px 0; }
+  .status-dot { text-align:center; font-size:11px; color:#7a8ba0; }
+  .status-dot .dot { width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,0.1); margin:0 auto 6px; }
+  .status-dot.done .dot { background:#00c9b1; }
+  .status-dot.current .dot { background:#38bdf8; box-shadow:0 0 8px rgba(56,189,248,0.5); }
+  .footer { background:rgba(0,0,0,0.2); padding:20px 32px; text-align:center; font-size:12px; color:#7a8ba0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1> MedCard Pro</h1>
+    <p> Delivery Status Update</p>
+  </div>
+  <div class="body">
+    <h2>Hello, {{ patient.first_name }}</h2>
+    <p>Your Patient Smart Card delivery status has been updated to <strong style="color:#38bdf8;">{{ delivery.get_status_display }}</strong>.</p>
+    <div class="card-box">
+      <div class="row"><span class="lbl">Card ID</span><span class="val" style="color:#00c9b1;font-family:monospace;">{{ delivery.card.card_id }}</span></div>
+      <div class="row"><span class="lbl">Current Status</span><span class="val" style="color:#38bdf8;">{{ delivery.get_status_display }}</span></div>
+      <div class="row"><span class="lbl">Delivering To</span><span class="val">{{ delivery.city }}, {{ delivery.state }}</span></div>
+      {% if delivery.tracking_id %}<div class="row"><span class="lbl">Tracking ID</span><span class="val">{{ delivery.tracking_id }}</span></div>{% endif %}
+    </div>
+    {% if delivery.status == 'delivered' %}
+    <p style="color:#00c9b1;font-weight:600;">🎉 Your card has been delivered! You can now use it at any empanelled hospital.</p>
+    {% elif delivery.status == 'out_for_delivery' %}
+    <p>Your card is out for delivery today. Please ensure someone is available at your delivery address.</p>
+    {% else %}
+    <p>You can track your delivery status anytime by logging into your MedCard account.</p>
+    {% endif %}
+  </div>
+  <div class="footer">Patient Smart Card · This is an automated email. Please do not reply.</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}OPD Appointments — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(167,139,250,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .speciality-grid { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:40px; }
+  .spec-chip { background:rgba(167,139,250,0.08); border:1px solid rgba(167,139,250,0.2); color:var(--violet); padding:7px 16px; border-radius:100px; font-size:13px; }
+  .booking-steps { display:flex; flex-direction:column; gap:0; margin-bottom:40px; }
+  .booking-step { display:flex; gap:20px; padding-bottom:24px; position:relative; }
+  .booking-step:not(:last-child)::before { content:''; position:absolute; left:19px; top:42px; bottom:0; width:2px; background:rgba(167,139,250,0.2); }
+  .booking-dot { width:40px; height:40px; border-radius:50%; background:rgba(167,139,250,0.1); border:2px solid rgba(167,139,250,0.3); display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+  .booking-step h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:4px; }
+  .booking-step p { font-size:13px; color:var(--muted); line-height:1.5; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Outpatient</div>
+  <h1>OPD Appointment Booking</h1>
+  <p>Book, manage, and attend outpatient appointments across 5,000+ hospitals and specialist clinics — all linked to your Smart Card for a seamless, paperless experience.</p>
+</div>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">📱</div><h4>Instant Booking</h4><p>Book appointments with any specialist at empanelled hospitals in under 60 seconds via app or web portal.</p></div>
+  <div class="feature-card"><div class="icon">🔔</div><h4>Smart Reminders</h4><p>Automated reminders 24 hours and 1 hour before your appointment via SMS, WhatsApp, and app notification.</p></div>
+  <div class="feature-card"><div class="icon">📋</div><h4>Pre-filled Records</h4><p>Doctor receives your EHR summary before you arrive — consultation starts immediately, no repeat history-taking.</p></div>
+  <div class="feature-card"><div class="icon">🔄</div><h4>Easy Reschedule</h4><p>Reschedule or cancel any appointment with one tap — up to 2 hours before the scheduled time, no charges.</p></div>
+  <div class="feature-card"><div class="icon">⏱️</div><h4>Queue Management</h4><p>See your live queue position before you leave home. Arrive just in time — no waiting room hours.</p></div>
+  <div class="feature-card"><div class="icon">💬</div><h4>Post-Visit Summary</h4><p>Consultation notes, diagnosis, and next steps are sent to your phone within 30 minutes of the appointment.</p></div>
+</div>
+
+<div class="section-title">Available Specialities</div>
+<div class="speciality-grid">
+  <div class="spec-chip"> General Physician</div>
+  <div class="spec-chip"> Cardiologist</div>
+  <div class="spec-chip"> Dermatologist</div>
+  <div class="spec-chip"> Neurologist</div>
+  <div class="spec-chip"> Orthopaedic</div>
+  <div class="spec-chip"> Gynaecologist</div>
+  <div class="spec-chip"> Paediatrician</div>
+  <div class="spec-chip"> Psychiatrist</div>
+  <div class="spec-chip"> Ophthalmologist</div>
+  <div class="spec-chip"> ENT Specialist</div>
+  <div class="spec-chip"> Gastroenterologist</div>
+  <div class="spec-chip"> Urologist</div>
+  <div class="spec-chip"> Oncologist</div>
+  <div class="spec-chip"> Endocrinologist</div>
+  <div class="spec-chip"> Pulmonologist</div>
+  <div class="spec-chip"> Rheumatologist</div>
+  <div class="spec-chip"> Nephrologist</div>
+  <div class="spec-chip"> Dentist</div>
+</div>
+
+<div class="section-title">How to Book</div>
+<div class="booking-steps">
+  <div class="booking-step"><div class="booking-dot">🔍</div><div><h4>Search</h4><p>Search by speciality, hospital name, doctor name, or location. Filter by date, language, or gender preference.</p></div></div>
+  <div class="booking-step"><div class="booking-dot">📅</div><div><h4>Select Slot</h4><p>View real-time availability and pick a date and time that works for you.</p></div></div>
+  <div class="booking-step"><div class="booking-dot">✅</div><div><h4>Confirm</h4><p>Appointment is confirmed instantly. Your Smart Card ID is linked — no need to carry any documents.</p></div></div>
+  <div class="booking-step"><div class="booking-dot">🏥</div><div><h4>Arrive & Tap</h4><p>At the hospital, tap your card at the OPD counter. Your token is generated and doctor is notified.</p></div></div>
+  <div class="booking-step"><div class="booking-dot">📋</div><div><h4>Post-Consult</h4><p>Notes, prescriptions, and follow-up dates are automatically added to your EHR.</p></div></div>
+</div>
+{% endblock %}

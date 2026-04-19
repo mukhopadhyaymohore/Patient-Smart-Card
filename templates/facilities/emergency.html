@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}Emergency Medical Access — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .emergency-banner { background:linear-gradient(135deg,rgba(255,107,138,0.15),rgba(255,107,138,0.05)); border:1px solid rgba(255,107,138,0.3); border-radius:16px; padding:28px; margin-bottom:40px; display:flex; gap:20px; align-items:flex-start; }
+  .emergency-banner .icon { font-size:40px; flex-shrink:0; }
+  .emergency-banner h3 { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; color:#fff; margin-bottom:8px; }
+  .emergency-banner p { font-size:14px; color:var(--muted); line-height:1.6; }
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(255,107,138,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .critical-info { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-bottom:40px; }
+  .info-chip { background:rgba(255,107,138,0.08); border:1px solid rgba(255,107,138,0.2); border-radius:12px; padding:16px; }
+  .info-chip .lbl { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:rgba(255,107,138,0.7); margin-bottom:6px; }
+  .info-chip .val { font-size:14px; font-weight:600; color:#fff; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Emergency</div>
+  <h1>Emergency Medical Access</h1>
+  <p>In a medical emergency, every second counts. Your Smart Card gives first responders and ER doctors instant access to your critical health information — even if you are unconscious.</p>
+</div>
+
+<div class="emergency-banner">
+  <div class="icon">🚨</div>
+  <div>
+    <h3>Critical Data — Always Accessible</h3>
+    <p>A special emergency layer on your card is readable without PIN or biometrics — designed specifically for first responders in life-threatening situations. This layer contains only essential, life-saving information.</p>
+  </div>
+</div>
+
+<div class="section-title">Information Available in Emergency Mode</div>
+<div class="critical-info">
+  <div class="info-chip"><div class="lbl">Blood Group</div><div class="val">O Positive</div></div>
+  <div class="info-chip"><div class="lbl">Critical Allergies</div><div class="val">Penicillin, Latex</div></div>
+  <div class="info-chip"><div class="lbl">Chronic Conditions</div><div class="val">Type 2 Diabetes</div></div>
+  <div class="info-chip"><div class="lbl">Current Medications</div><div class="val">Metformin 500mg</div></div>
+  <div class="info-chip"><div class="lbl">Emergency Contact</div><div class="val">+91 XXXXXXXXXX</div></div>
+  <div class="info-chip"><div class="lbl">Organ Donor</div><div class="val">Yes — Registered</div></div>
+  <div class="info-chip"><div class="lbl">Insurance</div><div class="val">Star Health Active</div></div>
+  <div class="info-chip"><div class="lbl">DNR Status</div><div class="val">Not Applicable</div></div>
+</div>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">🔓</div><h4>No PIN Required</h4><p>Emergency data is accessible without biometrics or PIN — readable by any NFC-enabled device or QR scanner.</p></div>
+  <div class="feature-card"><div class="icon">🏥</div><h4>ER Protocol Integration</h4><p>Empanelled hospitals' emergency departments are trained to scan Smart Cards on arrival for all unresponsive patients.</p></div>
+  <div class="feature-card"><div class="icon">📞</div><h4>Auto Emergency Alert</h4><p>When your card is scanned in emergency mode, your registered emergency contacts receive an automatic SMS alert.</p></div>
+  <div class="feature-card"><div class="icon">💉</div><h4>Allergy Warnings</h4><p>Drug allergies are prominently flagged to prevent administration of contraindicated medications during emergencies.</p></div>
+  <div class="feature-card"><div class="icon">🩸</div><h4>Blood Bank Link</h4><p>Card triggers automated blood bank query at the nearest facility for your blood group — saving critical time.</p></div>
+  <div class="feature-card"><div class="icon">📋</div><h4>Insurance Pre-Auth</h4><p>Emergency admissions trigger automatic insurance pre-authorisation — no delays due to paperwork during crisis.</p></div>
+</div>
+
+<div class="card" style="border-color:rgba(255,107,138,0.2);background:rgba(255,107,138,0.04);">
+  <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:12px;"> What Happens When Your Card Is Scanned in an Emergency</h3>
+  <ol style="font-size:14px;color:var(--muted);line-height:2.2;padding-left:20px;">
+    <li>First responder or ER staff taps card on NFC reader or scans QR</li>
+    <li>Critical data displays instantly — blood group, allergies, conditions, contacts</li>
+    <li>Emergency contact receives automatic SMS with hospital name and location</li>
+    <li>Insurance pre-auth is triggered automatically for cashless emergency admission</li>
+    <li>Full EHR becomes available once treating doctor authenticates with their credentials</li>
+  </ol>
+</div>
+{% endblock %}

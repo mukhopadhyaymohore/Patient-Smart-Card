@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %}Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .hero { text-align:center; display:flex; flex-direction:column; align-items:center; margin-bottom:60px; animation:fadeDown 0.8s ease both; }
+  .badge { display:inline-flex; align-items:center; gap:6px; background:rgba(0,201,177,0.1); border:1px solid rgba(0,201,177,0.25); color:var(--teal); font-size:11px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; padding:5px 14px; border-radius:100px; margin-bottom:20px; }
+  .hero h1 { font-family:'Syne',sans-serif; font-size:clamp(36px,6vw,64px); font-weight:800; letter-spacing:-0.02em; background:linear-gradient(135deg,#fff 30%,var(--teal) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:16px; line-height:1.05; }
+  .hero p { color:var(--muted); font-size:17px; max-width:540px; line-height:1.6; margin-bottom:32px; }
+  .card-stage { display:flex; justify-content:center; margin-bottom:72px; animation:fadeUp 0.9s 0.2s ease both; }
+  .smart-card { width:420px; height:260px; border-radius:20px; background:linear-gradient(135deg,#0d2545 0%,#0a3d4f 40%,#0d2535 100%); border:1px solid rgba(0,201,177,0.3); box-shadow:0 0 0 1px rgba(255,255,255,0.06),0 30px 80px rgba(0,0,0,0.6),0 0 60px rgba(0,201,177,0.08),inset 0 1px 0 rgba(255,255,255,0.1); padding:28px 30px 24px; position:relative; overflow:hidden; transition:transform 0.4s,box-shadow 0.4s; cursor:default; }
+  .smart-card:hover { transform:translateY(-6px) rotateX(2deg); box-shadow:0 40px 100px rgba(0,0,0,0.7),0 0 80px rgba(0,201,177,0.12); }
+  .smart-card::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,rgba(0,201,177,0.15) 0%,transparent 70%); }
+  .shimmer { position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,0.04) 50%,transparent 70%); animation:shimmer 3s ease-in-out infinite; }
+  @keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }
+  .card-logo { display:flex; align-items:center; gap:8px; }
+  .card-logo .icon { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--teal),var(--sky)); display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .card-logo .name { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:#fff; }
+  .card-logo .sub { font-size:10px; color:var(--teal); letter-spacing:0.08em; text-transform:uppercase; }
+  .chip { width:44px; height:34px; border-radius:6px; background:linear-gradient(135deg,#d4a843,#f0c96b,#b8872a); }
+  .card-patient { margin-bottom:18px; }
+  .card-patient .lbl { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--teal); margin-bottom:4px; opacity:0.8; }
+  .card-patient .pname { font-family:'Syne',sans-serif; font-size:19px; font-weight:700; color:#fff; }
+  .card-bottom { display:flex; justify-content:space-between; align-items:flex-end; }
+  .card-field .lbl { font-size:8px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.35); }
+  .card-field .val { font-size:12px; font-weight:500; color:rgba(255,255,255,0.85); }
+  .card-field .val.id { font-family:'Syne',sans-serif; font-size:11px; letter-spacing:0.12em; color:var(--teal); }
+  .renew-badge { position:absolute; top:12px; right:12px; background:rgba(244,200,66,0.15); border:1px solid rgba(244,200,66,0.4); color:var(--gold); font-size:9px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:3px 8px; border-radius:100px; }
+  .nfc { font-size:22px; opacity:0.5; animation:pulse 2.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:0.8;transform:scale(1.1)} }
+  .card-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:60px; animation:fadeUp 1s 0.4s ease both; }
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:60px; animation:fadeUp 1s 0.5s ease both; }
+  .stat-box { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px 16px; text-align:center; }
+  .stat-box .num { font-family:'Syne',sans-serif; font-size:30px; font-weight:800; background:linear-gradient(135deg,var(--teal),var(--sky)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:6px; }
+  .stat-box .desc { font-size:11px; color:var(--muted); }
+  .facilities-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; margin-bottom:60px; }
+  .fac-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px; display:flex; gap:16px; align-items:flex-start; transition:all 0.3s; text-decoration:none; color:inherit; position:relative; overflow:hidden; }
+  .fac-card:hover { background:rgba(255,255,255,0.07); transform:translateY(-3px); box-shadow:0 12px 40px rgba(0,0,0,0.3); }
+  .fac-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,var(--ac,var(--teal)),transparent); opacity:0; transition:opacity 0.3s; }
+  .fac-card:hover::before { opacity:1; }
+  .fac-icon { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+  .fac-content h3 { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .fac-content p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .fac-tag { display:inline-flex; align-items:center; gap:4px; margin-top:10px; font-size:10px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; padding:3px 10px; border-radius:100px; }
+  .flow-steps { display:flex; position:relative; overflow-x:auto; padding-bottom:8px; margin-bottom:60px; }
+  .flow-steps::before { content:''; position:absolute; top:28px; left:28px; right:28px; height:1px; background:linear-gradient(to right,transparent,rgba(0,201,177,0.3),rgba(56,189,248,0.3),transparent); }
+  .flow-step { flex:1; min-width:160px; display:flex; flex-direction:column; align-items:center; text-align:center; padding:0 12px; }
+  .step-num { width:56px; height:56px; border-radius:50%; background:var(--navy); border:2px solid var(--teal); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--teal); margin-bottom:16px; z-index:1; box-shadow:0 0 20px rgba(0,201,177,0.2); }
+  .step-icon { font-size:22px; margin-bottom:10px; }
+  .step-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .step-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+  .footer-note { text-align:center; padding:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; }
+  @media(max-width:640px){ .stats-row{grid-template-columns:repeat(2,1fr)} .smart-card{width:100%;height:auto;min-height:220px;} }
+</style>
+{% endblock %}
+{% block content %}
+
+<div class="hero">
+  <div class="badge"> Healthcare Innovation</div>
+  <h1>Patient Smart Card</h1>
+  <p>One card that unifies your entire healthcare journey — identity, records, insurance, and emergency access.</p>
+  {% if not user.is_authenticated %}
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+    <a href="{% url 'signup' %}" class="btn btn-primary">Get Your Card →</a>
+    <a href="{% url 'login' %}"  class="btn btn-outline">Login</a>
+  </div>
+  {% endif %}
+</div>
+
+<!-- CARD VISUAL -->
+<div class="card-stage">
+  <div class="smart-card">
+    <div class="shimmer"></div>
+    {% if card and card.is_expiring_soon %}
+      <div class="renew-badge"> Renew Soon</div>
+    {% endif %}
+    <div class="card-top">
+      <div class="card-logo">
+        <div class="icon">⚕️</div>
+        <div><div class="name">MedCard Pro</div><div class="sub">Smart Health ID</div></div>
+      </div>
+      <div class="chip"></div>
+    </div>
+    <div class="card-patient">
+      <div class="lbl">Patient Name</div>
+      <div class="pname">{% if patient %}{{ patient.full_name }}{% else %}Your Name Here{% endif %}</div>
+    </div>
+    <div class="card-bottom">
+      <div class="card-field"><div class="lbl">Patient ID</div><div class="val id">{% if card %}{{ card.card_id }}{% else %}HC · ---- · ----{% endif %}</div></div>
+      <div class="card-field"><div class="lbl">Blood Group</div><div class="val">{% if patient %}{{ patient.blood_group }}{% else %}— —{% endif %}</div></div>
+      <div class="card-field"><div class="lbl">Valid Until</div><div class="val">{% if card %}{{ card.valid_until|date:"m / Y" }}{% else %}— / ——{% endif %}</div></div>
+      <div class="nfc">📡</div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="card-actions">
+  {% if user.is_authenticated %}
+    {% if not card %}
+      <a href="{% url 'register' %}" class="btn btn-primary"> Register New Card</a>
+    {% else %}
+      <a href="{% url 'renewal' %}"  class="btn btn-outline"> Renew My Card</a>
+      <a href="{% url 'delivery' %}" class="btn btn-outline"> Track Delivery</a>
+    {% endif %}
+  {% else %}
+    <a href="{% url 'signup' %}" class="btn btn-primary"> Register New Card</a>
+    <a href="{% url 'login' %}"  class="btn btn-outline"> Renew / Track</a>
+  {% endif %}
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-box"><div class="num">12+</div><div class="desc">Core Facilities</div></div>
+  <div class="stat-box"><div class="num">24/7</div><div class="desc">Emergency Access</div></div>
+  <div class="stat-box"><div class="num">100%</div><div class="desc">Cashless Coverage</div></div>
+  <div class="stat-box"><div class="num">5K+</div><div class="desc">Empanelled Hospitals</div></div>
+</div>
+
+<!-- FACILITIES -->
+<div class="section-title">Facilities Available</div>
+<div class="facilities-grid">
+  {% for f in facilities %}
+  <a href="{% url 'facility' f.slug %}" class="fac-card" style="--ac:{{ f.color }}">
+    <div class="fac-icon" style="background:{{ f.bg }};color:{{ f.color }};">{{ f.icon }}</div>
+    <div class="fac-content">
+      <h3>{{ f.title }}</h3>
+      <p>{{ f.desc }}</p>
+      <div class="fac-tag" style="background:{{ f.bg }};color:{{ f.color }};">✦ {{ f.tag }}</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section-title">How It Works</div>
+<div class="flow-steps">
+  <div class="flow-step"><div class="step-num">1</div><div class="step-icon">🪪</div><div class="step-title">Tap or Scan</div><div class="step-desc">Present card at counter or scan QR</div></div>
+  <div class="flow-step"><div class="step-num">2</div><div class="step-icon">🔐</div><div class="step-title">Instant Verify</div><div class="step-desc">Biometric + PIN in 3 seconds</div></div>
+  <div class="flow-step"><div class="step-num">3</div><div class="step-icon">📋</div><div class="step-title">Records Pulled</div><div class="step-desc">Full medical history loaded</div></div>
+  <div class="flow-step"><div class="step-num">4</div><div class="step-icon">💊</div><div class="step-title">Care Delivered</div><div class="step-desc">Doctor consults with full context</div></div>
+  <div class="flow-step"><div class="step-num">5</div><div class="step-icon">💳</div><div class="step-title">Auto Settled</div><div class="step-desc">Cashless claim filed automatically</div></div>
+</div>
+
+<div class="footer-note">Patient Smart Card · Healthcare Innovation</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+</script>
+{% endblock %}

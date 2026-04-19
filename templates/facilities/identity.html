@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Unified Patient Identity — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(0,201,177,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .id-card-visual { background:linear-gradient(135deg,#0d2545 0%,#0a3d4f 40%,#0d2535 100%); border:1px solid rgba(0,201,177,0.3); border-radius:16px; padding:28px; margin-bottom:40px; position:relative; overflow:hidden; }
+  .id-card-visual::before { content:''; position:absolute; top:-40px; right:-40px; width:150px; height:150px; border-radius:50%; background:radial-gradient(circle,rgba(0,201,177,0.15) 0%,transparent 70%); }
+  .id-fields { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:20px; }
+  .id-field .lbl { font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-bottom:4px; }
+  .id-field .val { font-size:13px; font-weight:500; color:#fff; }
+  .security-list { display:flex; flex-direction:column; gap:12px; margin-bottom:40px; }
+  .security-item { display:flex; gap:16px; align-items:flex-start; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; }
+  .security-item .icon { font-size:24px; flex-shrink:0; }
+  .security-item h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:4px; }
+  .security-item p { font-size:13px; color:var(--muted); line-height:1.5; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Core</div>
+  <h1>Unified Patient Identity</h1>
+  <p>One card, one identity. Your Patient Smart Card replaces all fragmented health IDs and documents — Aadhaar-linked, biometric-enabled, and instantly verifiable at any empanelled facility nationwide.</p>
+</div>
+
+<div class="section-title">Your Digital Identity Card</div>
+<div class="id-card-visual">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--sky));display:flex;align-items:center;justify-content:center;font-size:18px;">⚕️</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;">MedCard Pro</div>
+        <div style="font-size:10px;color:var(--teal);letter-spacing:0.08em;text-transform:uppercase;">Smart Health ID</div>
+      </div>
+    </div>
+    <div style="background:rgba(0,201,177,0.1);border:1px solid rgba(0,201,177,0.25);color:var(--teal);font-size:10px;font-weight:700;padding:4px 12px;border-radius:100px;">● ACTIVE</div>
+  </div>
+  <div style="font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--teal);margin-bottom:6px;opacity:0.8;">Patient Name</div>
+  <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:20px;">{% if request.user.is_authenticated and request.user.patient %}{{ request.user.patient.full_name }}{% else %}Your Full Name{% endif %}</div>
+  <div class="id-fields">
+    <div class="id-field"><div class="lbl">Patient ID</div><div class="val" style="color:var(--teal);font-family:'Syne',sans-serif;font-size:12px;letter-spacing:0.1em;">HC · XXXX · XXXX</div></div>
+    <div class="id-field"><div class="lbl">Blood Group</div><div class="val">O Positive</div></div>
+    <div class="id-field"><div class="lbl">Valid Until</div><div class="val">MM / YYYY</div></div>
+    <div class="id-field"><div class="lbl">Aadhaar Linked</div><div class="val" style="color:var(--teal);">✓ Verified</div></div>
+    <div class="id-field"><div class="lbl">Biometric</div><div class="val" style="color:var(--teal);">✓ Enrolled</div></div>
+    <div class="id-field"><div class="lbl">NFC / QR</div><div class="val" style="color:var(--teal);">✓ Enabled</div></div>
+  </div>
+</div>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">🪪</div><h4>Single Unified ID</h4><p>One card replaces ABHA, hospital IDs, insurance cards, and discharge papers — accepted at all empanelled facilities.</p></div>
+  <div class="feature-card"><div class="icon">👆</div><h4>Biometric Authentication</h4><p>Fingerprint or iris scan verifies identity in under 3 seconds. No PIN required for emergency access.</p></div>
+  <div class="feature-card"><div class="icon">📡</div><h4>NFC & QR Access</h4><p>Tap the card on any NFC reader or scan the QR code on the back — works offline too with cached data.</p></div>
+  <div class="feature-card"><div class="icon">🔗</div><h4>Aadhaar Linked</h4><p>Aadhaar-based KYC ensures tamper-proof identity. Compliant with DPDP Act 2023 and NHA guidelines.</p></div>
+  <div class="feature-card"><div class="icon">🏥</div><h4>Universal Acceptance</h4><p>Recognised at 5,000+ hospitals, clinics, labs, and pharmacies across India — government and private.</p></div>
+  <div class="feature-card"><div class="icon">🔄</div><h4>Auto-Update</h4><p>Any change in your medical profile — new diagnosis, allergy, medication — reflects on the card instantly.</p></div>
+</div>
+
+<div class="section-title">Security Layers</div>
+<div class="security-list">
+  <div class="security-item"><div class="icon">🔐</div><div><h4>256-bit AES Encryption</h4><p>All data stored on the chip and transmitted over the network is encrypted with military-grade AES-256.</p></div></div>
+  <div class="security-item"><div class="icon">🛡️</div><div><h4>DPDP Act 2023 Compliant</h4><p>Your data is handled strictly under India's Digital Personal Data Protection Act. You control access at all times.</p></div></div>
+  <div class="security-item"><div class="icon">👁️</div><div><h4>Access Audit Trail</h4><p>Every time your card is scanned, a log is created. You can review who accessed your data and when.</p></div></div>
+  <div class="security-item"><div class="icon">🚫</div><div><h4>Remote Lock / Suspend</h4><p>Lost your card? Suspend it instantly via the app or helpline. No one can access your data until you reactivate.</p></div></div>
+</div>
+
+<div class="card">
+  <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:12px;">📍 How to Use Your Identity Card</h3>
+  <ol style="font-size:14px;color:var(--muted);line-height:2.2;padding-left:20px;">
+    <li>Present card at hospital reception or tap on NFC reader</li>
+    <li>Staff scans QR or chip — your identity is verified in seconds</li>
+    <li>Your complete profile loads: name, blood group, allergies, insurance</li>
+    <li>No forms to fill, no documents to carry</li>
+    <li>Access log is created and visible to you in real time</li>
+  </ol>
+</div>
+{% endblock %}

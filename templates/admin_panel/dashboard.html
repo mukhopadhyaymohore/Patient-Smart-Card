@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .admin-layout { display:grid; grid-template-columns:220px 1fr; gap:0; min-height:calc(100vh - 60px); position:relative; z-index:1; }
+  .admin-sidebar { background:rgba(13,27,62,0.6); border-right:1px solid var(--border); padding:32px 0; position:sticky; top:60px; height:calc(100vh - 60px); overflow-y:auto; }
+  .sidebar-section { padding:0 16px; margin-bottom:32px; }
+  .sidebar-label { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding:0 8px; margin-bottom:12px; }
+  .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; text-decoration:none; font-size:13px; color:var(--muted); transition:all 0.2s; margin-bottom:4px; }
+  .sidebar-link:hover, .sidebar-link.active { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .sidebar-link .icon { font-size:16px; width:20px; text-align:center; }
+  .sidebar-badge { margin-left:auto; background:var(--rose); color:#fff; font-size:10px; font-weight:700; padding:2px 7px; border-radius:100px; }
+  .admin-main { padding:40px 40px 80px; }
+  .admin-header { margin-bottom:40px; }
+  .admin-header h1 { font-family:'Orbitron',sans-serif; font-size:28px; font-weight:800; color:#fff; margin-bottom:6px; }
+  .admin-header p { color:var(--muted); font-size:14px; }
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-bottom:40px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:22px; transition:all 0.3s; cursor:default; }
+  .stat-card:hover { transform:translateY(-3px); box-shadow:0 12px 30px rgba(0,0,0,0.3); }
+  .stat-card .s-icon { font-size:28px; margin-bottom:12px; }
+  .stat-card .s-num { font-family:'Orbitron',sans-serif; font-size:32px; font-weight:800; line-height:1; margin-bottom:6px; }
+  .stat-card .s-label { font-size:12px; color:var(--muted); }
+  .recent-section { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media(max-width:900px){ .recent-section{ grid-template-columns:1fr; } .admin-layout{ grid-template-columns:1fr; } .admin-sidebar{ display:none; } }
+  .recent-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
+  .recent-card h3 { font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:20px; }
+  .recent-row { display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:13px; }
+  .recent-row:last-child { border-bottom:none; }
+  .recent-row .name { color:#fff; font-weight:500; }
+  .recent-row .meta { color:var(--muted); font-size:12px; }
+  .pill { display:inline-block; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .pill-pending    { background:rgba(244,200,66,0.15); color:var(--gold); }
+  .pill-active     { background:rgba(0,201,177,0.15);  color:var(--teal); }
+  .pill-submitted  { background:rgba(56,189,248,0.15); color:var(--sky);  }
+  .pill-approved   { background:rgba(0,201,177,0.15);  color:var(--teal); }
+  .pill-rejected   { background:rgba(255,107,138,0.15);color:var(--rose); }
+  .pill-suspended  { background:rgba(167,139,250,0.15);color:var(--violet);}
+  .alert-box { background:rgba(255,107,138,0.08); border:1px solid rgba(255,107,138,0.25); border-radius:12px; padding:16px 20px; margin-bottom:24px; display:flex; align-items:center; gap:12px; font-size:13px; color:var(--rose); }
+</style>
+{% endblock %}
+{% block content %}
+<div style="margin:-48px -24px 0; position:relative; z-index:1;">
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="{% url 'admin_dashboard' %}" class="sidebar-link active"><span class="icon">📊</span> Dashboard</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <a href="{% url 'admin_patients' %}"   class="sidebar-link"><span class="icon">👤</span> Patients</a>
+      <a href="{% url 'admin_cards' %}"      class="sidebar-link"><span class="icon">💳</span> Smart Cards</a>
+      <a href="{% url 'admin_deliveries' %}" class="sidebar-link"><span class="icon">📦</span> Deliveries</a>
+      <a href="{% url 'admin_renewals' %}"   class="sidebar-link">
+        <span class="icon">🔄</span> Renewals
+        {% if pending_renewals > 0 %}<span class="sidebar-badge">{{ pending_renewals }}</span>{% endif %}
+      </a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <a href="/admin/" class="sidebar-link"><span class="icon">⚙️</span> Django Admin</a>
+      <a href="{% url 'home' %}" class="sidebar-link"><span class="icon">🏠</span> Back to Site</a>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+    <div class="admin-header">
+      <h1>Admin Dashboard</h1>
+      <p>Welcome back, {{ request.user.username }}. Here's your system overview.</p>
+    </div>
+
+    {% if expiring_soon > 0 %}
+    <div class="alert-box">
+      ⚠️ <strong>{{ expiring_soon }} card(s)</strong> are expiring within 90 days and need renewal attention.
+    </div>
+    {% endif %}
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="s-icon">👤</div>
+        <div class="s-num" style="color:var(--teal);">{{ total_patients }}</div>
+        <div class="s-label">Total Patients</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">💳</div>
+        <div class="s-num" style="color:var(--sky);">{{ total_cards }}</div>
+        <div class="s-label">Total Cards Issued</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">✅</div>
+        <div class="s-num" style="color:#34d399;">{{ active_cards }}</div>
+        <div class="s-label">Active Cards</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">⏳</div>
+        <div class="s-num" style="color:var(--gold);">{{ pending_cards }}</div>
+        <div class="s-label">Pending Cards</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">📦</div>
+        <div class="s-num" style="color:var(--violet);">{{ total_deliveries }}</div>
+        <div class="s-label">Total Deliveries</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">🔄</div>
+        <div class="s-num" style="color:var(--rose);">{{ pending_renewals }}</div>
+        <div class="s-label">Pending Renewals</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">⚠️</div>
+        <div class="s-num" style="color:var(--gold);">{{ expiring_soon }}</div>
+        <div class="s-label">Expiring Soon</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-icon">🏠</div>
+        <div class="s-num" style="color:#34d399;">{{ delivered }}</div>
+        <div class="s-label">Cards Delivered</div>
+      </div>
+    </div>
+
+    <!-- RECENT -->
+    <div class="recent-section">
+      <div class="recent-card">
+        <h3> Recent Registrations</h3>
+        {% for p in recent_patients %}
+        <div class="recent-row">
+          <div>
+            <div class="name">{{ p.full_name }}</div>
+            <div class="meta">{{ p.mobile }} · {{ p.created_at|date:"d M Y" }}</div>
+          </div>
+          <a href="{% url 'admin_patient_detail' p.pk %}" style="color:var(--teal);font-size:12px;text-decoration:none;">View →</a>
+        </div>
+        {% empty %}
+        <p style="color:var(--muted);font-size:13px;">No patients yet.</p>
+        {% endfor %}
+      </div>
+      <div class="recent-card">
+        <h3> Recent Renewal Requests</h3>
+        {% for r in recent_renewals %}
+        <div class="recent-row">
+          <div>
+            <div class="name">{{ r.card.patient.full_name }}</div>
+            <div class="meta">{{ r.card.card_id }} · {{ r.requested_on|date:"d M Y" }}</div>
+          </div>
+          <span class="pill pill-{{ r.status }}">{{ r.get_status_display }}</span>
+        </div>
+        {% empty %}
+        <p style="color:var(--muted);font-size:13px;">No renewals yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}

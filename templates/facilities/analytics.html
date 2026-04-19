@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Health Analytics — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(56,189,248,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .health-score { background:linear-gradient(135deg,rgba(56,189,248,0.1),rgba(0,201,177,0.05)); border:1px solid rgba(56,189,248,0.25); border-radius:20px; padding:32px; margin-bottom:40px; display:flex; gap:32px; align-items:center; flex-wrap:wrap; }
+  .score-circle { width:120px; height:120px; border-radius:50%; background:conic-gradient(var(--teal) 0% 78%, rgba(255,255,255,0.08) 78% 100%); display:flex; align-items:center; justify-content:center; flex-shrink:0; position:relative; }
+  .score-circle::before { content:''; position:absolute; width:88px; height:88px; border-radius:50%; background:var(--deep); }
+  .score-inner { position:relative; z-index:1; text-align:center; }
+  .score-inner .num { font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:var(--teal); line-height:1; }
+  .score-inner .lbl { font-size:10px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
+  .score-details h3 { font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:#fff; margin-bottom:8px; }
+  .score-details p { font-size:14px; color:var(--muted); line-height:1.6; max-width:400px; }
+  .metrics-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; margin-bottom:40px; }
+  .metric-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; }
+  .metric-card .m-icon { font-size:22px; margin-bottom:10px; }
+  .metric-card .m-val { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:#fff; line-height:1; margin-bottom:4px; }
+  .metric-card .m-name { font-size:12px; color:var(--muted); margin-bottom:6px; }
+  .metric-card .m-trend { font-size:11px; font-weight:600; }
+  .trend-up { color:#34d399; }
+  .trend-down { color:var(--rose); }
+  .trend-stable { color:var(--gold); }
+  .risk-list { display:flex; flex-direction:column; gap:12px; margin-bottom:40px; }
+  .risk-item { display:flex; justify-content:space-between; align-items:center; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 20px; }
+  .risk-item .name { font-size:14px; color:#fff; font-weight:500; }
+  .risk-bar-wrap { flex:1; margin:0 20px; height:6px; background:rgba(255,255,255,0.06); border-radius:100px; overflow:hidden; }
+  .risk-bar { height:100%; border-radius:100px; }
+  .risk-low    { background:linear-gradient(to right,#34d399,#059669); }
+  .risk-medium { background:linear-gradient(to right,var(--gold),#d97706); }
+  .risk-high   { background:linear-gradient(to right,var(--rose),#dc2626); }
+  .risk-label { font-size:12px; font-weight:600; min-width:50px; text-align:right; }
+  .risk-label.low    { color:#34d399; }
+  .risk-label.medium { color:var(--gold); }
+  .risk-label.high   { color:var(--rose); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Insights</div>
+  <h1>Health Analytics Dashboard</h1>
+  <p>Your personalised health intelligence hub — track vitals over time, understand your risk profile, and get proactive nudges to stay ahead of health issues before they become serious.</p>
+</div>
+
+<div class="section-title">Your Health Score</div>
+<div class="health-score">
+  <div class="score-circle">
+    <div class="score-inner"><div class="num">78</div><div class="lbl">/ 100</div></div>
+  </div>
+  <div class="score-details">
+    <h3>Good — Room to Improve</h3>
+    <p>Your health score is calculated from your vitals, lab trends, medication adherence, appointment regularity, and lifestyle indicators. Improve your score by completing your annual checkup and managing your BP readings.</p>
+  </div>
+</div>
+
+<div class="section-title">Key Metrics</div>
+<div class="metrics-grid">
+  <div class="metric-card"><div class="m-icon">❤️</div><div class="m-val">118/76</div><div class="m-name">Blood Pressure</div><div class="m-trend trend-stable">→ Stable</div></div>
+  <div class="metric-card"><div class="m-icon">🩸</div><div class="m-val">7.2%</div><div class="m-name">HbA1c</div><div class="m-trend trend-down">↓ Improved</div></div>
+  <div class="metric-card"><div class="m-icon">⚖️</div><div class="m-val">74 kg</div><div class="m-name">Body Weight</div><div class="m-trend trend-up">↑ +2kg this month</div></div>
+  <div class="metric-card"><div class="m-icon">🫀</div><div class="m-val">182</div><div class="m-name">Total Cholesterol</div><div class="m-trend trend-stable">→ Normal</div></div>
+  <div class="metric-card"><div class="m-icon">🩺</div><div class="m-val">98%</div><div class="m-name">SpO2</div><div class="m-trend trend-stable">→ Normal</div></div>
+  <div class="metric-card"><div class="m-icon">💊</div><div class="m-val">91%</div><div class="m-name">Medication Adherence</div><div class="m-trend trend-up">↑ Good</div></div>
+</div>
+
+<div class="section-title">Predictive Risk Profile</div>
+<div class="risk-list">
+  <div class="risk-item"><div class="name"> Cardiovascular Risk</div><div class="risk-bar-wrap"><div class="risk-bar risk-low" style="width:22%"></div></div><div class="risk-label low">Low</div></div>
+  <div class="risk-item"><div class="name"> Diabetes Progression</div><div class="risk-bar-wrap"><div class="risk-bar risk-medium" style="width:55%"></div></div><div class="risk-label medium">Medium</div></div>
+  <div class="risk-item"><div class="name"> Osteoporosis Risk</div><div class="risk-bar-wrap"><div class="risk-bar risk-low" style="width:18%"></div></div><div class="risk-label low">Low</div></div>
+  <div class="risk-item"><div class="name"> Hypertension Risk</div><div class="risk-bar-wrap"><div class="risk-bar risk-medium" style="width:45%"></div></div><div class="risk-label medium">Medium</div></div>
+  <div class="risk-item"><div class="name"> Respiratory Risk</div><div class="risk-bar-wrap"><div class="risk-bar risk-low" style="width:12%"></div></div><div class="risk-label low">Low</div></div>
+</div>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">📈</div><h4>Trend Tracking</h4><p>View how your key health metrics have changed over weeks, months, and years — with interactive charts.</p></div>
+  <div class="feature-card"><div class="icon">🔮</div><h4>Predictive Alerts</h4><p>AI-driven early warnings for conditions you may be at risk for, based on your lab trends and family history.</p></div>
+  <div class="feature-card"><div class="icon">💡</div><h4>Personalised Nudges</h4><p>Reminders for annual screenings, vaccination boosters, dental checkups, and preventive tests due for your age group.</p></div>
+  <div class="feature-card"><div class="icon">🏃</div><h4>Lifestyle Integration</h4><p>Connect fitness trackers and wearables to enrich your health score with steps, sleep, and heart rate data.</p></div>
+  <div class="feature-card"><div class="icon">👨‍👩‍👧</div><h4>Family Health View</h4><p>View health summaries for all family members linked under your account — one dashboard for the whole family.</p></div>
+  <div class="feature-card"><div class="icon">📄</div><h4>Health Report Export</h4><p>Generate a comprehensive health report PDF anytime — useful for insurance applications or second opinions.</p></div>
+</div>
+{% endblock %}

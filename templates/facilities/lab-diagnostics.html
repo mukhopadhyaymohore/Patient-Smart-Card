@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}Lab & Diagnostics — Patient Smart Card{% endblock %}
+{% block extra_css %}
+<style>
+  .feature-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
+  .feature-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:all 0.3s; }
+  .feature-card:hover { border-color:rgba(52,211,153,0.3); transform:translateY(-2px); }
+  .feature-card .icon { font-size:28px; margin-bottom:12px; }
+  .feature-card h4 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .feature-card p { font-size:13px; color:var(--muted); line-height:1.55; }
+  .partner-list { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:40px; }
+  .partner-chip { background:var(--surface); border:1px solid var(--border); border-radius:100px; padding:8px 18px; font-size:13px; color:var(--text); transition:all 0.2s; }
+  .partner-chip:hover { border-color:rgba(52,211,153,0.4); color:#fff; }
+  .discount-table { width:100%; border-collapse:collapse; margin-bottom:40px; }
+  .discount-table th { font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-align:left; padding:12px 16px; border-bottom:1px solid var(--border); }
+  .discount-table td { font-size:14px; color:var(--text); padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .discount-table tr:hover td { background:rgba(255,255,255,0.02); }
+  .discount-badge { display:inline-block; background:rgba(52,211,153,0.15); color:#34d399; font-size:12px; font-weight:700; padding:3px 10px; border-radius:100px; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <a href="{% url 'home' %}" class="back">← Back to Home</a>
+  <div class="badge"> Diagnostics</div>
+  <h1>Lab & Diagnostic Access</h1>
+  <p>Discounted diagnostics at 2,000+ partner labs nationwide. All results auto-synced to your Electronic Health Record — no physical reports needed.</p>
+</div>
+
+<div class="section-title">Key Features</div>
+<div class="feature-grid">
+  <div class="feature-card"><div class="icon">🔖</div><h4>Instant Discounts</h4><p>Up to 40% off on 500+ diagnostic tests at partner labs simply by presenting your Smart Card.</p></div>
+  <div class="feature-card"><div class="icon">📲</div><h4>Auto EHR Sync</h4><p>Lab results are pushed directly to your health record within minutes of availability — zero paperwork.</p></div>
+  <div class="feature-card"><div class="icon">🏠</div><h4>Home Sample Collection</h4><p>Schedule a phlebotomist to collect samples from your home. Available in 200+ cities.</p></div>
+  <div class="feature-card"><div class="icon">🔔</div><h4>Report Alerts</h4><p>SMS and app notifications when your reports are ready. No need to check manually.</p></div>
+  <div class="feature-card"><div class="icon">📊</div><h4>Trend Tracking</h4><p>Compare results across visits. Identify trends in CBC, lipid profile, HbA1c over time.</p></div>
+  <div class="feature-card"><div class="icon">⚡</div><h4>Pre-authorisation</h4><p>Insurance pre-auth for diagnostic packages is automatic — cashless diagnostics at network labs.</p></div>
+</div>
+
+<div class="section-title">Discount Schedule</div>
+<table class="discount-table">
+  <thead><tr><th>Test Category</th><th>Standard Price</th><th>Card Price</th><th>Discount</th></tr></thead>
+  <tbody>
+    <tr><td>Complete Blood Count (CBC)</td><td>₹ 350</td><td>₹ 210</td><td><span class="discount-badge">40% OFF</span></td></tr>
+    <tr><td>Lipid Profile</td><td>₹ 600</td><td>₹ 390</td><td><span class="discount-badge">35% OFF</span></td></tr>
+    <tr><td>HbA1c (Diabetes)</td><td>₹ 500</td><td>₹ 300</td><td><span class="discount-badge">40% OFF</span></td></tr>
+    <tr><td>Thyroid Panel (T3/T4/TSH)</td><td>₹ 800</td><td>₹ 520</td><td><span class="discount-badge">35% OFF</span></td></tr>
+    <tr><td>Full Body Checkup Package</td><td>₹ 3,500</td><td>₹ 2,100</td><td><span class="discount-badge">40% OFF</span></td></tr>
+    <tr><td>X-Ray / Ultrasound</td><td>₹ 1,200</td><td>₹ 840</td><td><span class="discount-badge">30% OFF</span></td></tr>
+    <tr><td>MRI / CT Scan</td><td>₹ 8,000</td><td>₹ 5,600</td><td><span class="discount-badge">30% OFF</span></td></tr>
+  </tbody>
+</table>
+
+<div class="section-title">Partner Labs</div>
+<div class="partner-list">
+  <div class="partner-chip"> Dr. Lal PathLabs</div>
+  <div class="partner-chip"> SRL Diagnostics</div>
+  <div class="partner-chip"> Thyrocare</div>
+  <div class="partner-chip"> Metropolis</div>
+  <div class="partner-chip"> Apollo Diagnostics</div>
+  <div class="partner-chip"> Vijaya Diagnostics</div>
+  <div class="partner-chip"> Suburban Diagnostics</div>
+  <div class="partner-chip"> Agilus Diagnostics</div>
+  <div class="partner-chip"> CORE Diagnostics</div>
+  <div class="partner-chip"> Neuberg Diagnostics</div>
+  <div class="partner-chip"> MedGenome</div>
+  <div class="partner-chip"> Quest Diagnostics</div>
+</div>
+
+<div class="card">
+  <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;"> How to Avail</h3>
+  <ol style="font-size:14px;color:var(--muted);line-height:2;padding-left:20px;">
+    <li>Visit any partner lab or book home collection via the MedCard app</li>
+    <li>Present your Smart Card — lab scans the QR or NFC chip</li>
+    <li>Discount is applied instantly at billing</li>
+    <li>For cashless insurance claims, pre-auth is auto-triggered</li>
+    <li>Results appear in your Health Records within 2–4 hours</li>
+  </ol>
+</div>
+{% endblock %}

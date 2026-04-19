@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Patient Smart Card{% endblock %}</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/shared.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="{% url 'home' %}"> MedCard<span class="dot">.</span></a>
+  <div class="nav-links">
+    <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>Home</a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'register' %}" {% if request.resolver_match.url_name == 'register' %}class="active"{% endif %}>Register</a>
+      <a href="{% url 'renewal' %}"  {% if request.resolver_match.url_name == 'renewal'  %}class="active"{% endif %}>Renewal</a>
+      <a href="{% url 'delivery' %}" {% if request.resolver_match.url_name == 'delivery' %}class="active"{% endif %}>Delivery</a>
+      {% if user.is_superuser %}
+      <a href="{% url 'admin_dashboard' %}" {% if request.resolver_match.url_name == 'admin_dashboard' %}class="active"{% endif %} style="color:var(--gold);">⚙ Admin</a>
+      {% endif %}
+      <a href="{% url 'logout' %}" class="btn-outline" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border);font-size:13px;">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}"  {% if request.resolver_match.url_name == 'login'  %}class="active"{% endif %}>Login</a>
+      <a href="{% url 'signup' %}" class="cta">Get Your Card →</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="wrap">
+  {% if messages %}
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }}">
+        <span>{% if msg.tags == 'success' %}✅{% elif msg.tags == 'warning' %}⚠️{% else %}❌{% endif %}</span>
+        {{ msg }}
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</div>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

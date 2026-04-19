@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block title %}{{ patient.full_name }} — Admin{% endblock %}
+{% block extra_css %}
+<style>
+  .admin-layout { display:grid; grid-template-columns:220px 1fr; gap:0; min-height:calc(100vh - 60px); position:relative; z-index:1; }
+  .admin-sidebar { background:rgba(13,27,62,0.6); border-right:1px solid var(--border); padding:32px 0; position:sticky; top:60px; height:calc(100vh - 60px); overflow-y:auto; }
+  .sidebar-section { padding:0 16px; margin-bottom:32px; }
+  .sidebar-label { font-size:10px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); padding:0 8px; margin-bottom:12px; }
+  .sidebar-link { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; text-decoration:none; font-size:13px; color:var(--muted); transition:all 0.2s; margin-bottom:4px; }
+  .sidebar-link:hover, .sidebar-link.active { background:rgba(0,201,177,0.1); color:var(--teal); }
+  .sidebar-link .icon { font-size:16px; width:20px; text-align:center; }
+  .admin-main { padding:40px 40px 80px; }
+  .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px; }
+  @media(max-width:768px){ .detail-grid{ grid-template-columns:1fr; } }
+  .detail-box { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:24px; }
+  .detail-box h3 { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:#fff; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+  .detail-row { display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:13px; }
+  .detail-row:last-child { border-bottom:none; }
+  .detail-row .lbl { color:var(--muted); }
+  .detail-row .val { color:#fff; font-weight:500; text-align:right; max-width:60%; }
+  .pill { display:inline-block; padding:3px 10px; border-radius:100px; font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+  .pill-pending   { background:rgba(244,200,66,0.15); color:var(--gold); }
+  .pill-active    { background:rgba(0,201,177,0.15);  color:var(--teal); }
+  .pill-submitted { background:rgba(56,189,248,0.15); color:var(--sky);  }
+  .pill-approved  { background:rgba(0,201,177,0.15);  color:var(--teal); }
+  .pill-rejected  { background:rgba(255,107,138,0.15);color:var(--rose); }
+  .action-btn { display:inline-flex; align-items:center; gap:5px; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:all 0.2s; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .btn-delete { background:rgba(255,107,138,0.1); color:var(--rose); border:1px solid rgba(255,107,138,0.25); }
+  .btn-delete:hover { background:rgba(255,107,138,0.2); }
+  .btn-back { background:rgba(255,255,255,0.05); color:var(--muted); }
+  .btn-back:hover { color:#fff; }
+</style>
+{% endblock %}
+{% block content %}
+<div style="margin:-48px -24px 0; position:relative; z-index:1;">
+<div class="admin-layout">
+  <div class="admin-sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <a href="{% url 'admin_dashboard' %}" class="sidebar-link"><span class="icon">📊</span> Dashboard</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Management</div>
+      <a href="{% url 'admin_patients' %}"   class="sidebar-link active"><span class="icon">👤</span> Patients</a>
+      <a href="{% url 'admin_cards' %}"      class="sidebar-link"><span class="icon">💳</span> Smart Cards</a>
+      <a href="{% url 'admin_deliveries' %}" class="sidebar-link"><span class="icon">📦</span> Deliveries</a>
+      <a href="{% url 'admin_renewals' %}"   class="sidebar-link"><span class="icon">🔄</span> Renewals</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">System</div>
+      <a href="/admin/" class="sidebar-link"><span class="icon">⚙️</span> Django Admin</a>
+      <a href="{% url 'home' %}" class="sidebar-link"><span class="icon">🏠</span> Back to Site</a>
+    </div>
+  </div>
+
+  <div class="admin-main">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:32px;flex-wrap:wrap;gap:16px;">
+      <div>
+        <a href="{% url 'admin_patients' %}" class="action-btn btn-back" style="margin-bottom:12px;display:inline-flex;">← Back to Patients</a>
+        <h1 style="font-family:'Orbitron',sans-serif;font-size:24px;font-weight:800;color:#fff;">{{ patient.full_name }}</h1>
+        <p style="color:var(--muted);font-size:14px;">Registered {{ patient.created_at|date:"d M Y" }}</p>
+      </div>
+      <a href="{% url 'admin_patient_delete' patient.pk %}" class="action-btn btn-delete">🗑 Delete Patient</a>
+    </div>
+
+    <div class="detail-grid">
+      <!-- PERSONAL -->
+      <div class="detail-box">
+        <h3> Personal Info</h3>
+        <div class="detail-row"><span class="lbl">Full Name</span><span class="val">{{ patient.full_name }}</span></div>
+        <div class="detail-row"><span class="lbl">Date of Birth</span><span class="val">{{ patient.date_of_birth }}</span></div>
+        <div class="detail-row"><span class="lbl">Gender</span><span class="val">{{ patient.get_gender_display }}</span></div>
+        <div class="detail-row"><span class="lbl">Mobile</span><span class="val">{{ patient.mobile }}</span></div>
+        <div class="detail-row"><span class="lbl">Email</span><span class="val">{{ patient.email|default:"—" }}</span></div>
+        <div class="detail-row"><span class="lbl">Aadhaar</span><span class="val">{{ patient.aadhaar }}</span></div>
+        <div class="detail-row"><span class="lbl">Address</span><span class="val">{{ patient.address }}</span></div>
+      </div>
+
+      <!-- MEDICAL -->
+      <div class="detail-box">
+        <h3> Medical Info</h3>
+        <div class="detail-row"><span class="lbl">Blood Group</span><span class="val" style="color:var(--rose);font-weight:700;">{{ patient.blood_group }}</span></div>
+        <div class="detail-row"><span class="lbl">Height / Weight</span><span class="val">{{ patient.height_cm|default:"—" }} cm / {{ patient.weight_kg|default:"—" }} kg</span></div>
+        <div class="detail-row"><span class="lbl">Allergies</span><span class="val">{{ patient.allergies|default:"None" }}</span></div>
+        <div class="detail-row"><span class="lbl">Chronic Conditions</span><span class="val">{{ patient.chronic_conditions|default:"None" }}</span></div>
+        <div class="detail-row"><span class="lbl">Current Medications</span><span class="val">{{ patient.current_medications|default:"None" }}</span></div>
+        <div class="detail-row"><span class="lbl">Emergency Contact</span><span class="val">{{ patient.emergency_name }} ({{ patient.emergency_mobile }})</span></div>
+      </div>
+
+      <!-- CARD -->
+      <div class="detail-box">
+        <h3> Smart Card</h3>
+        {% if card %}
+        <div class="detail-row"><span class="lbl">Card ID</span><span class="val" style="color:var(--teal);font-family:'Orbitron',sans-serif;font-size:12px;">{{ card.card_id }}</span></div>
+        <div class="detail-row"><span class="lbl">Status</span><span class="val"><span class="pill pill-{{ card.status }}">{{ card.get_status_display }}</span></span></div>
+        <div class="detail-row"><span class="lbl">Issued On</span><span class="val">{{ card.issued_on|date:"d M Y" }}</span></div>
+        <div class="detail-row"><span class="lbl">Valid Until</span><span class="val">{{ card.valid_until|date:"d M Y" }}</span></div>
+        <div class="detail-row"><span class="lbl">Days to Expiry</span><span class="val" style="color:{% if card.is_expiring_soon %}var(--gold){% else %}var(--teal){% endif %};">{{ card.days_to_expiry }} days</span></div>
+        {% else %}
+        <p style="color:var(--muted);font-size:13px;">No card issued yet.</p>
+        {% endif %}
+      </div>
+
+      <!-- INSURANCE -->
+      <div class="detail-box">
+        <h3> Insurance</h3>
+        <div class="detail-row"><span class="lbl">Provider</span><span class="val">{{ patient.insurance_provider|default:"—" }}</span></div>
+        <div class="detail-row"><span class="lbl">Policy No.</span><span class="val">{{ patient.policy_number|default:"—" }}</span></div>
+        <div class="detail-row"><span class="lbl">Sum Insured</span><span class="val">{% if patient.sum_insured %}₹ {{ patient.sum_insured }}{% else %}—{% endif %}</span></div>
+        <div class="detail-row"><span class="lbl">Policy Expiry</span><span class="val">{{ patient.policy_expiry|default:"—" }}</span></div>
+        <div class="detail-row"><span class="lbl">PM-JAY</span><span class="val">{% if patient.scheme_pmjay %}✅ Yes{% else %}—{% endif %}</span></div>
+        <div class="detail-row"><span class="lbl">Defence</span><span class="val">{% if patient.scheme_defence %}✅ Yes{% else %}—{% endif %}</span></div>
+      </div>
+    </div>
+
+    <!-- DELIVERY -->
+    {% if delivery %}
+    <div class="detail-box" style="margin-bottom:20px;">
+      <h3> Delivery Info</h3>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        <div class="detail-row" style="flex-direction:column;gap:4px;"><span class="lbl">Address</span><span class="val" style="text-align:left;">{{ delivery.address_line1 }}, {{ delivery.city }}, {{ delivery.state }} — {{ delivery.pin_code }}</span></div>
+        <div class="detail-row" style="flex-direction:column;gap:4px;"><span class="lbl">Status</span><span class="val"><span class="pill pill-{{ delivery.status }}">{{ delivery.get_status_display }}</span></span></div>
+        <div class="detail-row" style="flex-direction:column;gap:4px;"><span class="lbl">Tracking ID</span><span class="val" style="text-align:left;">{{ delivery.tracking_id|default:"Not assigned" }}</span></div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- RENEWALS -->
+    {% if renewals %}
+    <div class="detail-box">
+      <h3> Renewal History</h3>
+      {% for r in renewals %}
+      <div class="detail-row">
+        <div><div style="color:#fff;font-weight:500;">{{ r.requested_on|date:"d M Y" }}</div><div style="font-size:12px;color:var(--muted);">New expiry: {{ r.new_expiry|date:"d M Y" }}</div></div>
+        <span class="pill pill-{{ r.status }}">{{ r.get_status_display }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+</div>
+{% endblock %}

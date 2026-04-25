@@ -34,7 +34,6 @@ The Patient Smart Card system replaces fragmented health documents with a single
 - 💳 Smart Card status management
 - 📦 Delivery tracking and status updates
 - 🔄 Renewal request approval/rejection workflow
-- 📧 Automated email notifications
 
 ---
 
@@ -45,7 +44,6 @@ The Patient Smart Card system replaces fragmented health documents with a single
 | Backend | Python, Django 4.2 |
 | Frontend | HTML5, CSS3, JavaScript |
 | Database | SQLite (dev) |
-| Email | Mailtrap SMTP |
 | Static Files | WhiteNoise |
 | Deployment | Render |
 | Version Control | Git, GitHub |
@@ -98,10 +96,6 @@ pip install -r requirements.txt
 SECRET_KEY=your-secret-key
 DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
-EMAIL_HOST=sandbox.smtp.mailtrap.io
-EMAIL_PORT=2525
-EMAIL_HOST_USER=your-mailtrap-username
-EMAIL_HOST_PASSWORD=your-mailtrap-password
 
 # Run migrations
 python manage.py migrate
@@ -124,14 +118,6 @@ Deployed on **Render** with:
 - HTTPS provided automatically by Render
 
 ---
-
-## 📧 Email Notifications
-
-Automated emails are sent for:
-- ✅ Registration confirmation
-- 🔄 Renewal approved / rejected
-- 📦 Delivery status updates
-
 
 ## 📄 License
 
